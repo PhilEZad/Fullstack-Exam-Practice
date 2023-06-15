@@ -1,6 +1,9 @@
 # Created by https://www.toptal.com/developers/gitignore/api/angular,csharp,webstorm+all
 # Edit at https://www.toptal.com/developers/gitignore?templates=angular,csharp,webstorm+all
 
+#Firebase#
+firebaseconfig.js
+
 ### Angular ###
 ## Angular ##
 # compiled output
