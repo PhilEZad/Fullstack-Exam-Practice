@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import firebase from 'firebase/compat/app'
 import 'firebase/compat/firestore'
+import 'firebase/compat/auth'
 
 import * as config from '../../firebaseconfig.js'
 
@@ -11,13 +12,21 @@ export class FireService {
 
   firebaseApplication;
   firestore: firebase.firestore.Firestore;
+  fireauth: firebase.auth.Auth;
   messages: any[] = [];
 
   constructor() {
     this.firebaseApplication = firebase.initializeApp(config.firebaseconfig)
     this.firestore = firebase.firestore();
+    this.fireauth = firebase.auth();
 
-    this.getMessages()
+    this.fireauth.onAuthStateChanged((user) =>
+    {
+      if(user)
+      {
+        this.getMessages()
+      }
+    })
   }
 
 
@@ -56,6 +65,21 @@ export class FireService {
           }
         })
       })
+  }
+
+  register(email: string, password: string): void
+  {
+    this.fireauth.createUserWithEmailAndPassword(email, password)
+  }
+
+  signIn(email: string, password: string)
+  {
+    this.fireauth.signInWithEmailAndPassword(email, password)
+  }
+
+  signOut()
+  {
+    this.fireauth.signOut()
   }
 }
 
