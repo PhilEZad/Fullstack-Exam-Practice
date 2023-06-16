@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import firebase from 'firebase/compat/app'
+import { MatSnackBar} from "@angular/material/snack-bar";
 import 'firebase/compat/firestore'
 import 'firebase/compat/auth'
 
@@ -10,12 +11,13 @@ import * as config from '../../firebaseconfig.js'
 })
 export class FireService {
 
+  lastError: string = "";
   firebaseApplication;
   firestore: firebase.firestore.Firestore;
   fireauth: firebase.auth.Auth;
   messages: any[] = [];
 
-  constructor() {
+  constructor(public snack: MatSnackBar) {
     this.firebaseApplication = firebase.initializeApp(config.firebaseconfig)
     this.firestore = firebase.firestore();
     this.fireauth = firebase.auth();
@@ -67,14 +69,22 @@ export class FireService {
       })
   }
 
-  register(email: string, password: string): void
-  {
-    this.fireauth.createUserWithEmailAndPassword(email, password)
+  signIn(email: string, password: string) {
+    this.fireauth.signInWithEmailAndPassword(email, password)
+      .catch(error => {
+        this.snack.open(error.message, 'Close')
+        this.lastError = error.code;
+        console.log(error.message())
+      })
   }
 
-  signIn(email: string, password: string)
-  {
-    this.fireauth.signInWithEmailAndPassword(email, password)
+  register(email: string, password: string): void {
+    this.fireauth.createUserWithEmailAndPassword(email, password)
+      .catch(error => {
+        this.snack.open(error.message, 'Close');
+        this.lastError = error.code;
+        console.log(error.message())
+      })
   }
 
   signOut()

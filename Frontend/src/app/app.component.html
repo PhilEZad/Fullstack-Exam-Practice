@@ -1,9 +1,10 @@
 <div *ngIf="fireService.fireauth.currentUser == null">
-  <input placeholder="Email" [ngModel]="email" type="email">
-  <input placeholder="Password" [ngModel]="password" type="password">
+  <input placeholder="Email" [(ngModel)]="email" type="email">
+  <input placeholder="Password" [(ngModel)]="password" type="password">
   <br>
   <button (click)="fireService.signIn(email, password)">Sign In</button>
   <button (click)="fireService.register(email, password)">Register</button>
+
 </div>
 
 <div *ngIf="fireService.fireauth.currentUser">
@@ -15,4 +16,5 @@
 <p *ngFor="let m of fireService.messages">
   {{m | json}}
 </p>
+  <button (click)="fireService.signOut()">Sign Out</button>
 </div>
