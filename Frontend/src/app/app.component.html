@@ -9,6 +9,8 @@
 
 <div *ngIf="fireService.fireauth.currentUser">
   <h1>Welcome, {{fireService.fireauth.currentUser.email}}</h1>
+    <img (click)="fileInput.click()" style="max-height: 180px" [src]="fireService.currentSignedInUserAvatarURL">
+    <input (change)="fireService.updateUserImage($event)" hidden #fileInput type="file">
 <input [(ngModel)]="sendThisMessage">
 
 <button (click)="fireService.sendMessage(sendThisMessage)">send message</button>

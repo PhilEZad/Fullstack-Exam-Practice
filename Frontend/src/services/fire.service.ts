@@ -3,6 +3,7 @@ import firebase from 'firebase/compat/app'
 import { MatSnackBar} from "@angular/material/snack-bar";
 import 'firebase/compat/firestore'
 import 'firebase/compat/auth'
+import 'firebase/compat/storage'
 
 import * as config from '../../firebaseconfig.js'
 
@@ -16,17 +17,21 @@ export class FireService {
   firestore: firebase.firestore.Firestore;
   fireauth: firebase.auth.Auth;
   messages: any[] = [];
+  storage: firebase.storage.Storage;
+  currentSignedInUserAvatarURL: string = "https://cdn-icons-png.flaticon.com/512/149/149071.png?w=740&t=st=1686927983~exp=1686928583~hmac=06f646a94b6cf1b5fe2f62b7aecdb82ac8270c5780f7bebc4efb15626d2c129f";
 
   constructor(public snack: MatSnackBar) {
     this.firebaseApplication = firebase.initializeApp(config.firebaseconfig)
     this.firestore = firebase.firestore();
     this.fireauth = firebase.auth();
+    this.storage = firebase.storage();
 
     this.fireauth.onAuthStateChanged((user) =>
     {
       if(user)
       {
         this.getMessages()
+        this.getImageOfSignedInUser()
       }
     })
   }
@@ -74,7 +79,7 @@ export class FireService {
       .catch(error => {
         this.snack.open(error.message, 'Close')
         this.lastError = error.code;
-        console.log(error.message())
+        console.log(error.message)
       })
   }
 
@@ -83,13 +88,32 @@ export class FireService {
       .catch(error => {
         this.snack.open(error.message, 'Close');
         this.lastError = error.code;
-        console.log(error.message())
+        console.log(error.message)
       })
   }
 
   signOut()
   {
     this.fireauth.signOut()
+    this.currentSignedInUserAvatarURL = "https://cdn-icons-png.flaticon.com/512/149/149071.png?w=740&t=st=1686927983~exp=1686928583~hmac=06f646a94b6cf1b5fe2f62b7aecdb82ac8270c5780f7bebc4efb15626d2c129f";
+
+  }
+
+  async  getImageOfSignedInUser(): Promise<void>
+  {
+    this.currentSignedInUserAvatarURL = await this.storage
+      .ref('avatars')
+      .child(this.fireauth.currentUser?.uid + "")
+      .getDownloadURL()
+  }
+
+  async updateUserImage($event): Promise<void> {
+    const image = $event.target.files[0];
+    const uploadTask = await this.storage
+      .ref('avatars')
+      .child(this.fireauth.currentUser?.uid + "")
+      .put(image);
+    this.currentSignedInUserAvatarURL = await uploadTask.ref.getDownloadURL();
   }
 }
 
