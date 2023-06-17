@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import firebase from 'firebase/compat/app'
 import { MatSnackBar} from "@angular/material/snack-bar";
+import axios from "axios";
 import 'firebase/compat/firestore'
 import 'firebase/compat/auth'
 import 'firebase/compat/storage'
@@ -19,7 +20,7 @@ export class FireService {
   messages: any[] = [];
   storage: firebase.storage.Storage;
   currentSignedInUserAvatarURL: string = "https://cdn-icons-png.flaticon.com/512/149/149071.png?w=740&t=st=1686927983~exp=1686928583~hmac=06f646a94b6cf1b5fe2f62b7aecdb82ac8270c5780f7bebc4efb15626d2c129f";
-
+  baseUrl: string = "http://127.0.0.1:5001/fir-exam-practice/us-central1/api/";
   constructor(public snack: MatSnackBar) {
     this.firebaseApplication = firebase.initializeApp(config.firebaseconfig)
     this.firestore = firebase.firestore();
@@ -38,12 +39,19 @@ export class FireService {
 
 
   sendMessage(sendThisMessage: any) {
-    let messageDTO: MessageDTO =
+    let messageDTO =
       {
         messageContent: sendThisMessage,
+        user: this.fireauth.currentUser?.uid+"",
         timeStamp: new Date(),
-        user: 'some user'
+        id: (Math.random() +1).toString(20).substring(2,15)
       }
+      //axios.post(this.baseUrl + 'messageFilter', messageDTO)
+      //  .then(success => {
+      //    console.log(success.data);
+      //  }).catch(err => {
+      //    console.log(err)
+      //})
     this.firestore
       .collection('myChat')
       .add(messageDTO)
@@ -96,7 +104,6 @@ export class FireService {
   {
     this.fireauth.signOut()
     this.currentSignedInUserAvatarURL = "https://cdn-icons-png.flaticon.com/512/149/149071.png?w=740&t=st=1686927983~exp=1686928583~hmac=06f646a94b6cf1b5fe2f62b7aecdb82ac8270c5780f7bebc4efb15626d2c129f";
-
   }
 
   async  getImageOfSignedInUser(): Promise<void>
@@ -115,10 +122,4 @@ export class FireService {
       .put(image);
     this.currentSignedInUserAvatarURL = await uploadTask.ref.getDownloadURL();
   }
-}
-
-export interface MessageDTO{
-  messageContent: string
-  timeStamp: Date;
-  user: string;
 }

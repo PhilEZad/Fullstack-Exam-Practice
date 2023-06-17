@@ -1,22 +1,66 @@
-<div *ngIf="fireService.fireauth.currentUser == null">
-  <input placeholder="Email" [(ngModel)]="email" type="email">
-  <input placeholder="Password" [(ngModel)]="password" type="password">
-  <br>
-  <button (click)="fireService.signIn(email, password)">Sign In</button>
-  <button (click)="fireService.register(email, password)">Register</button>
+<div
+  style="display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  grid-auto-rows: 1fr;
+  "
+  *ngIf="fireService.fireauth.currentUser == null">
+  <div style="text-align: center; grid-column: 4 / 10; grid-row: 4 / 16">
+    <ion-item>
+      <ion-input placeholder="Email" [(ngModel)]="email" type="email"></ion-input>
+    </ion-item>
+    <ion-item>
+      <ion-input placeholder="Password" [(ngModel)]="password" type="password"></ion-input>
+    </ion-item>
+
+    <ion-button (click)="fireService.signIn(email, password)">Sign In</ion-button>
+    <ion-button (click)="fireService.register(email, password)">Register</ion-button>
+  </div>
+</div>
+
+<ion-header *ngIf="fireService.fireauth.currentUser">
+  <ion-toolbar>
+    <ion-title>
+    Welcome to the realtime chat
+    </ion-title>
+    <img (click)="fileInput.click()" style="max-height: 30px" [src]="fireService.currentSignedInUserAvatarURL">
+    <input (change)="fireService.updateUserImage($event)" hidden #fileInput type="file">
+    <ion-buttons slot="end">
+      <ion-button (click)="fireService.signOut()">
+        <ion-icon name="log-out-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<div *ngIf="fireService.fireauth.currentUser"
+  style="height: calc(100% - 150px);
+  display: grid;
+  align-content: end;
+  grid-template-columns: repeat(12, 1fr);
+  grid-auto-rows: 50px;
+  overflow-y: scroll;
+">
+
+    <div style="grid-column: 1 / 12;" *ngFor="let m of fireService.messages">
+        <div style="float: right" *ngIf="fireService.fireauth.currentUser.uid==m.data.user">
+          <ion-text style="background-color: cornflowerblue; color: white; padding: 5px 12px; border-radius: 15px">
+            {{m.data.messageContent}}
+          </ion-text>
+        </div>
+
+        <div style="float: left" *ngIf="fireService.fireauth.currentUser.uid!=m.data.user">
+          <ion-text style="background-color: lightgrey; color: black; padding: 5px 12px; border-radius: 15px;">
+            {{m.data.messageContent}}
+          </ion-text>
+        </div>
+    </div>
 
 </div>
 
-<div *ngIf="fireService.fireauth.currentUser">
-  <h1>Welcome, {{fireService.fireauth.currentUser.email}}</h1>
-    <img (click)="fileInput.click()" style="max-height: 180px" [src]="fireService.currentSignedInUserAvatarURL">
-    <input (change)="fireService.updateUserImage($event)" hidden #fileInput type="file">
-<input [(ngModel)]="sendThisMessage">
-
-<button (click)="fireService.sendMessage(sendThisMessage)">send message</button>
-
-<p *ngFor="let m of fireService.messages">
-  {{m | json}}
-</p>
-  <button (click)="fireService.signOut()">Sign Out</button>
+<div *ngIf="fireService.fireauth.currentUser"
+  style="grid-column: 1 / 12">
+  <ion-item>
+    <ion-input placeholder="Write A Message" [(ngModel)]="sendThisMessage"></ion-input>
+    <ion-button fill="outline" (click)="fireService.sendMessage(sendThisMessage)">send message</ion-button>
+  </ion-item>
 </div>

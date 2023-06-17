@@ -1,5 +1,11 @@
 {
   "projects": {
     "default": "fir-exam-practice"
+  },
+  "targets": {},
+  "etags": {
+    "fir-exam-practice": {
+      "extensionInstances": {}
+    }
   }
 }

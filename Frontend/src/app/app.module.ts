@@ -6,6 +6,7 @@ import { AppComponent } from './app.component';
 import { FormsModule } from "@angular/forms";
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MatSnackBarModule } from "@angular/material/snack-bar";
+import { IonicModule } from '@ionic/angular';
 
 @NgModule({
   declarations: [
@@ -17,6 +18,7 @@ import { MatSnackBarModule } from "@angular/material/snack-bar";
         FormsModule,
         BrowserAnimationsModule,
         MatSnackBarModule,
+        IonicModule.forRoot({mode: "ios"}),
     ],
   providers: [],
   bootstrap: [AppComponent]
